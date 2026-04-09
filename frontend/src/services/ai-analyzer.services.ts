@@ -12,15 +12,33 @@ async function analyzeCV(file: File | null, jobDescription: string) {
     const base64Data = await fileToBase64(file);
 
     const prompt = `
-        Analyze the following CV based on this job description: ${jobDescription}.
+        Analyze the following CV against this Job Description: ${jobDescription}.
         
-        Return the analysis ONLY as a valid JSON object with the following keys:
-        - "compatibilityScore": (number between 0-100)
-        - "matchingSkills": (array of strings)
-        - "missingRequirements": (array of strings)
-        - "summary": (a 2-3 sentence overview of the candidate's fit)
+        Return a JSON object with this exact structure:
+        {
+          "compatibilityScore": number,
+          "cvKeywords": string[],
+          "jdKeywords": string[],
+          "matchingSkills": string[],
+          "missingRequirements": string[],
+          "suggestions": [
+            {
+              "title": string,
+              "description": string,
+              "actionLabel": string,
+              "actionUrl": string
+            }
+          ],
+          "summary": string
+        }
 
-        Strictly output valid JSON only. Do not include markdown formatting or backticks.
+        For the "suggestions":
+        - Identify gaps like Cloud, DevOps, or specific frameworks.
+        - Provide a helpful "actionLabel" (e.g., "View Certifications" or "Learn More").
+        - Provide a relevant "actionUrl" (e.g., a documentation link or roadmap).
+        - If the candidate is strong in an area, provide a positive suggestion on how to highlight it further.
+
+        Strictly output valid JSON. No markdown.
     `;
 
     try {
