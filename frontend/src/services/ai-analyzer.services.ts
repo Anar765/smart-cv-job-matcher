@@ -1,0 +1,64 @@
+import { GoogleGenAI } from "@google/genai";
+
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+
+async function analyzeCV(file: File | null, jobDescription: string) {
+
+    if(!file) {
+        console.error("Provide your CV");
+        return;
+    }
+
+    const base64Data = await fileToBase64(file);
+
+    const prompt = `
+        Analyze the following CV based on this job description: ${jobDescription}.
+        
+        Return the analysis ONLY as a valid JSON object with the following keys:
+        - "compatibilityScore": (number between 0-100)
+        - "matchingSkills": (array of strings)
+        - "missingRequirements": (array of strings)
+        - "summary": (a 2-3 sentence overview of the candidate's fit)
+
+        Strictly output valid JSON only. Do not include markdown formatting or backticks.
+    `;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-3-flash-preview",
+            contents: [
+                {
+                    role: "user",
+                    parts: [
+                        { text: prompt },
+                        {
+                            inlineData: {
+                                data: base64Data,
+                                mimeType: file.type
+                            }
+                        }
+                    ]
+                }
+            ]
+        });
+
+        console.log(response.text);
+        return response.text;
+    } catch (error) {
+        console.error("Analysis failed:", error);
+    }
+}
+
+function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            const base64String = (reader.result as string).split(",")[1];
+            resolve(base64String);
+        };
+        reader.onerror = (error) => reject(error);
+    });
+}
+
+export default analyzeCV;
