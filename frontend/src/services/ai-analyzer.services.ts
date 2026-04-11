@@ -16,21 +16,35 @@ async function analyzeCV(file: File | null, jobDescription: string) {
         
         Return a JSON object with this exact structure:
         {
-          "compatibilityScore": number,
-          "cvKeywords": string[],
-          "jdKeywords": string[],
-          "matchingSkills": string[],
-          "missingRequirements": string[],
-          "suggestions": [
-            {
-              "title": string,
-              "description": string,
-              "actionLabel": string,
-              "actionUrl": string
-            }
-          ],
-          "summary": string
+            "job": {
+                "title": string,
+                "company": string,
+                "date": string
+            },
+            "compatibilityScore": number,
+            "skillsSummary": {
+                "matched": number,
+                "missing": number
+            },
+            "cvKeywords": string[],
+            "jdKeywords": string[],
+            "matchingSkills": string[],
+            "missingRequirements": string[],
+            "suggestions": [
+                {
+                "title": string,
+                "description": string,
+                "actionLabel": string,
+                "actionUrl": string
+                }
+            ],
+            "summary": string
         }
+
+        Rules:
+        - Extract "title" and "company" from the job description.
+        - If no date is provided, generate a realistic recent date (YYYY-MM-DD).
+        - compatibilityScore must be 0-100.
 
         For the "suggestions":
         - Identify gaps like Cloud, DevOps, or specific frameworks.
