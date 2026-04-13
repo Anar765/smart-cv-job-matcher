@@ -14,64 +14,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-
-const analysisHistory = [
-  {
-    id: 1,
-    jobTitle: "Senior Software Engineer",
-    company: "Tech Corp Inc.",
-    date: "2026-03-20",
-    score: 78,
-    status: "analyzed",
-    skills: { matched: 7, missing: 5 },
-  },
-  {
-    id: 2,
-    jobTitle: "Full Stack Developer",
-    company: "StartupXYZ",
-    date: "2026-03-18",
-    score: 85,
-    status: "analyzed",
-    skills: { matched: 9, missing: 3 },
-  },
-  {
-    id: 3,
-    jobTitle: "Frontend Engineer",
-    company: "Design Studios",
-    date: "2026-03-15",
-    score: 92,
-    status: "analyzed",
-    skills: { matched: 11, missing: 2 },
-  },
-  {
-    id: 4,
-    jobTitle: "React Developer",
-    company: "WebAgency Pro",
-    date: "2026-03-12",
-    score: 88,
-    status: "analyzed",
-    skills: { matched: 10, missing: 3 },
-  },
-  {
-    id: 5,
-    jobTitle: "Backend Engineer",
-    company: "DataFlow Systems",
-    date: "2026-03-08",
-    score: 52,
-    status: "analyzed",
-    skills: { matched: 4, missing: 8 },
-  },
-  {
-    id: 6,
-    jobTitle: "DevOps Engineer",
-    company: "CloudNine Inc.",
-    date: "2026-03-05",
-    score: 35,
-    status: "analyzed",
-    skills: { matched: 3, missing: 10 },
-  },
-];
+import { useEffect, useState } from "react";
 
 const stats = {
   totalAnalyses: 12,
@@ -81,10 +24,11 @@ const stats = {
 };
 
 export default function HistoryPage() {
+  const [analysisHistory, setAnalysisHistory] = useState<any>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<"all" | "high" | "medium" | "low">("all");
 
-  const filteredHistory = analysisHistory.filter((item) => {
+  const filteredHistory = analysisHistory.filter((item: any) => {
     const matchesSearch =
       item.jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.company.toLowerCase().includes(searchQuery.toLowerCase());
@@ -103,6 +47,25 @@ export default function HistoryPage() {
     if (score >= 50) return "bg-primary/10";
     return "bg-destructive/10";
   };
+
+  useEffect(() => {
+    const getAnalysisHistoryData = async () => {
+      try {
+        const response = await fetch('/analysisHistory.json');
+        if(!response.ok) {
+          throw new Error('Something goes wrong');
+        }
+
+        const json = await response.json();
+        console.log(json);
+        setAnalysisHistory(json);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getAnalysisHistoryData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -167,7 +130,7 @@ export default function HistoryPage() {
         {/* History List */}
         <div className="space-y-4">
           {filteredHistory.length > 0 ? (
-            filteredHistory.map((item) => (
+            filteredHistory.map((item: any) => (
               <div
                 key={item.id}
                 className="group rounded-2xl border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 sm:p-6"

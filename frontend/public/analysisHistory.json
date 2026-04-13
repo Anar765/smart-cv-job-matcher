@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "jobTitle": "Senior Software Engineer",
+    "company": "Tech Corp Inc.",
+    "date": "2026-03-20",
+    "score": 78,
+    "status": "analyzed",
+    "skills": { "matched": 7, "missing": 5 }
+  },
+  {
+    "id": 2,
+    "jobTitle": "Full Stack Developer",
+    "company": "StartupXYZ",
+    "date": "2026-03-18",
+    "score": 85,
+    "status": "analyzed",
+    "skills": { "matched": 9, "missing": 3 }
+  },
+  {
+    "id": 3,
+    "jobTitle": "Frontend Engineer",
+    "company": "Design Studios",
+    "date": "2026-03-15",
+    "score": 92,
+    "status": "analyzed",
+    "skills": { "matched": 11, "missing": 2 }
+  },
+  {
+    "id": 4,
+    "jobTitle": "React Developer",
+    "company": "WebAgency Pro",
+    "date": "2026-03-12",
+    "score": 88,
+    "status": "analyzed",
+    "skills": { "matched": 10, "missing": 3 }
+  },
+  {
+    "id": 5,
+    "jobTitle": "Backend Engineer",
+    "company": "DataFlow Systems",
+    "date": "2026-03-08",
+    "score": 52,
+    "status": "analyzed",
+    "skills": { "matched": 4, "missing": 8 }
+  },
+  {
+    "id": 6,
+    "jobTitle": "DevOps Engineer",
+    "company": "CloudNine Inc.",
+    "date": "2026-03-05",
+    "score": 35,
+    "status": "analyzed",
+    "skills": { "matched": 3, "missing": 10 }
+  }
+]
