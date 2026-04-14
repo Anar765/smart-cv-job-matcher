@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { DashboardHeader } from "../../components/DashboardHeader";
 import { ScoreCircle } from "../../components/ScoreCircle";
 import { SkillTag } from "../../components/SkillTag";
@@ -15,57 +16,11 @@ import {
   BarChart3,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-
-const matchedSkills = [
-  "JavaScript",
-  "React",
-  "TypeScript",
-  "Git",
-  "REST APIs",
-  "Problem Solving",
-  "Team Collaboration",
-];
-
-const missingSkills = [
-  "Node.js",
-  "AWS",
-  "Docker",
-  "CI/CD",
-  "PostgreSQL",
-];
-
-const suggestions = [
-  {
-    type: "improvement" as const,
-    title: "Add Cloud Experience",
-    description: "The job requires AWS experience. Consider adding relevant cloud projects or certifications to strengthen your application.",
-    action: "View AWS Certifications",
-  },
-  {
-    type: "improvement" as const,
-    title: "Highlight Backend Skills",
-    description: "Emphasize any Node.js or backend development experience you have. Even personal projects count.",
-    action: "Learn More",
-  },
-  {
-    type: "warning" as const,
-    title: "Missing DevOps Keywords",
-    description: "Docker and CI/CD are mentioned in the job description but not in your CV. Add relevant experience if you have it.",
-  },
-  {
-    type: "positive" as const,
-    title: "Strong Frontend Skills",
-    description: "Your React and TypeScript experience matches well with the requirements. These are your strongest points.",
-  },
-];
-
-const keywordAnalysis = {
-  cv: ["JavaScript", "React", "TypeScript", "CSS", "HTML", "Git", "Agile", "REST APIs", "Problem Solving", "Communication"],
-  job: ["JavaScript", "React", "TypeScript", "Node.js", "AWS", "Docker", "CI/CD", "PostgreSQL", "REST APIs", "Team Collaboration"],
-};
+import { AppContext } from "../../App";
 
 export default function ResultsPage() {
-  const score = 78;
+
+  const { GeminiResponse } = useContext(AppContext);
 
   return (
     <div className="min-h-screen bg-background">
@@ -98,14 +53,14 @@ export default function ResultsPage() {
           <div className="lg:col-span-1">
             <div className="rounded-2xl border border-border/50 bg-card p-6 text-center">
               <h2 className="mb-6 text-lg font-semibold text-foreground">Match Score</h2>
-              <ScoreCircle score={score} size="lg" />
+              <ScoreCircle score={GeminiResponse ? GeminiResponse.compatibilityScore : 0} size="lg" />
               <div className="mt-6 grid grid-cols-2 gap-4">
                 <div className="rounded-xl bg-success/10 p-3">
-                  <p className="text-2xl font-bold text-success">{matchedSkills.length}</p>
+                  <p className="text-2xl font-bold text-success">{GeminiResponse ? GeminiResponse.matchingSkills.length : 0}</p>
                   <p className="text-xs text-muted-foreground">Matched Skills</p>
                 </div>
                 <div className="rounded-xl bg-destructive/10 p-3">
-                  <p className="text-2xl font-bold text-destructive">{missingSkills.length}</p>
+                  <p className="text-2xl font-bold text-destructive">{GeminiResponse ? GeminiResponse.missingRequirements.length : 0}</p>
                   <p className="text-xs text-muted-foreground">Missing Skills</p>
                 </div>
               </div>
@@ -132,11 +87,11 @@ export default function ResultsPage() {
                   <CheckCircle2 className="h-4 w-4 text-success" />
                   <h3 className="font-medium text-foreground">Matching Skills</h3>
                   <span className="rounded-full bg-success/10 px-2 py-0.5 text-xs text-success">
-                    {matchedSkills.length} found
+                    {GeminiResponse ? GeminiResponse.matchingSkills.length : 0} found
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {matchedSkills.map((skill) => (
+                  {GeminiResponse?.matchingSkills.map((skill) => (
                     <SkillTag key={skill} skill={skill} type="matched" />
                   ))}
                 </div>
@@ -148,11 +103,11 @@ export default function ResultsPage() {
                   <XCircle className="h-4 w-4 text-destructive" />
                   <h3 className="font-medium text-foreground">Missing Skills</h3>
                   <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs text-destructive">
-                    {missingSkills.length} missing
+                    {GeminiResponse ? GeminiResponse.missingRequirements.length : 0} missing
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {missingSkills.map((skill) => (
+                  {GeminiResponse?.missingRequirements.map((skill) => (
                     <SkillTag key={skill} skill={skill} type="missing" />
                   ))}
                 </div>
@@ -169,9 +124,11 @@ export default function ResultsPage() {
               <h2 className="text-lg font-semibold text-foreground">AI Suggestions</h2>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              {suggestions.map((suggestion, index) => (
+              {GeminiResponse ? GeminiResponse.suggestions.map((suggestion, index) => (
                 <SuggestionCard key={index} {...suggestion} />
-              ))}
+              )) : 
+              <p className="text-muted-foreground italic">No suggestions available at this time.</p>
+              }
             </div>
           </div>
         </div>
@@ -192,8 +149,8 @@ export default function ResultsPage() {
                 </div>
                 <div className="rounded-xl border border-border bg-secondary/30 p-4">
                   <div className="flex flex-wrap gap-2">
-                    {keywordAnalysis.cv.map((keyword) => {
-                      const isMatched = keywordAnalysis.job.includes(keyword);
+                    {GeminiResponse ? GeminiResponse.cvKeywords.map((keyword) => {
+                      const isMatched = GeminiResponse?.jdKeywords.includes(keyword);
                       return (
                         <span
                           key={keyword}
@@ -206,7 +163,9 @@ export default function ResultsPage() {
                           {keyword}
                         </span>
                       );
-                    })}
+                    }) : 
+                    <p className="text-muted-foreground text-sm">Upload a resume to extract keywords.</p>
+                    }
                   </div>
                 </div>
               </div>
@@ -219,8 +178,8 @@ export default function ResultsPage() {
                 </div>
                 <div className="rounded-xl border border-border bg-secondary/30 p-4">
                   <div className="flex flex-wrap gap-2">
-                    {keywordAnalysis.job.map((keyword) => {
-                      const isMatched = keywordAnalysis.cv.includes(keyword);
+                    {GeminiResponse ? GeminiResponse.jdKeywords.map((keyword) => {
+                      const isMatched = GeminiResponse?.cvKeywords.includes(keyword);
                       return (
                         <span
                           key={keyword}
@@ -233,7 +192,9 @@ export default function ResultsPage() {
                           {keyword}
                         </span>
                       );
-                    })}
+                    }) : 
+                    <p className="text-muted-foreground text-sm">Waiting for job description analysis...</p>
+                    }
                   </div>
                 </div>
               </div>

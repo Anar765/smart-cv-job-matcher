@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
-async function analyzeCV(file: File | null, jobDescription: string) {
+async function getGeminiAnalysis(file: File | null, jobDescription: string) {
 
     if(!file) {
         console.error("Provide your CV");
@@ -32,6 +32,7 @@ async function analyzeCV(file: File | null, jobDescription: string) {
             "missingRequirements": string[],
             "suggestions": [
                 {
+                "type": "improvement" | "warning" | "positive",
                 "title": string,
                 "description": string,
                 "actionLabel": string,
@@ -93,4 +94,4 @@ function fileToBase64(file: File): Promise<string> {
     });
 }
 
-export default analyzeCV;
+export default getGeminiAnalysis;

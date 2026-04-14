@@ -13,10 +13,42 @@ import AnalyzePage from './pages/dashboard/AnalyzePage'
 import ResultsPage from './pages/dashboard/ResultsPage'
 import InsightsPage from './pages/dashboard/InsightsPage'
 import HistoryPage from './pages/dashboard/HistoryPage'
+import { useState, createContext, type Dispatch, type SetStateAction } from 'react'
+import type { GeminiResponseProps } from './types/GeminiResponseProps'
+
+interface AppContextProps {
+  GeminiResponse: GeminiResponseProps | undefined,
+  setGeminiResponse: Dispatch<SetStateAction<GeminiResponseProps | undefined>>
+}
+
+export const AppContext = createContext<AppContextProps>({
+  GeminiResponse: {
+    job: {
+        title: "",
+        company: "",
+        date: ""
+    },
+    compatibilityScore: 0,
+    skillsSummary: {
+        matched: 0,
+        missing: 0
+    },
+    cvKeywords: [],
+    jdKeywords: [],
+    matchingSkills: [],
+    missingRequirements: [],
+    suggestions: [],
+    summary: ""
+  },
+  setGeminiResponse: () => {}
+});
 
 function App() {
+
+  const [GeminiResponse, setGeminiResponse] = useState<GeminiResponseProps>();
+
   return (
-    <>
+    <AppContext value={{GeminiResponse, setGeminiResponse}}>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
@@ -33,7 +65,7 @@ function App() {
         </Route>
       </Routes>
       <Toaster />
-    </>
+    </AppContext>
   )
 }
 

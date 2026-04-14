@@ -1,15 +1,8 @@
 import { cn } from "../lib/utils";
 import { Lightbulb, AlertTriangle, CheckCircle2, ArrowUpRight } from "lucide-react";
+import type { SuggestionsProps } from "../types/GeminiResponseProps";
 
-interface SuggestionCardProps {
-  type: "improvement" | "warning" | "positive";
-  title: string;
-  description: string;
-  action?: string;
-  className?: string;
-}
-
-export function SuggestionCard({ type, title, description, action, className }: SuggestionCardProps) {
+export function SuggestionCard({ type, title, description, actionLabel, actionURL }: SuggestionsProps) {
   const config = {
     improvement: {
       icon: Lightbulb,
@@ -38,8 +31,7 @@ export function SuggestionCard({ type, title, description, action, className }: 
       className={cn(
         "group rounded-xl border p-4 transition-all hover:shadow-md",
         bg,
-        border,
-        className
+        border
       )}
     >
       <div className="flex items-start gap-3">
@@ -49,9 +41,9 @@ export function SuggestionCard({ type, title, description, action, className }: 
         <div className="flex-1">
           <h4 className="mb-1 font-semibold text-foreground">{title}</h4>
           <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
-          {action && (
+          {actionLabel && (
             <button className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:underline">
-              {action}
+              <a href={actionURL}>{actionLabel}</a>
               <ArrowUpRight className="h-3.5 w-3.5" />
             </button>
           )}

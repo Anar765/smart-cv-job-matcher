@@ -10,8 +10,10 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
-import { useState, useCallback, type DragEvent, type ChangeEvent } from "react";
+import { useState, useCallback, type DragEvent, type ChangeEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import getGeminiAnalysis from "../../services/ai-analyzer.services";
+import { AppContext } from "../../App";
 
 export default function AnalyzePage() {
   const navigate = useNavigate();
@@ -20,6 +22,7 @@ export default function AnalyzePage() {
   const [jobDescription, setJobDescription] = useState("");
   const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const { setGeminiResponse } = useContext(AppContext);
 
   const handleDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -62,13 +65,24 @@ export default function AnalyzePage() {
     setUploadStatus("idle");
   };
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async() => {
     if (!file || !jobDescription.trim()) return;
     
     setIsAnalyzing(true);
-    setTimeout(() => {
+
+    try {
+      const response = await getGeminiAnalysis(file, jobDescription);
+      if(!response) {
+        throw new Error("Failed to receive analysis from Gemini.")
+      }
+      setGeminiResponse(JSON.parse(response));
+
       navigate("/dashboard/results");
-    }, 2000);
+    } catch (error) {
+      console.error("Analysis failed: ", error);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const isReadyToAnalyze = file && jobDescription.trim() && uploadStatus === "success";
